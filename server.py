@@ -8,6 +8,7 @@ class Server:
     Server that will send the file or get the file from the client.
     """
     def __init__(self, server_address, port=3, size=1024, backlog=5, msg_handler=None):
+        self.debug = False
         self.address = server_address
         self.remote_address = None
         self.port = port
@@ -24,7 +25,6 @@ class Server:
         self.handler = msg_handler
 
     def start_server(self):
-        print("Starting server...")
         if self.handler is None:
             self.handler = msg.MessageHandler()
         try:
@@ -32,19 +32,18 @@ class Server:
         except Exception as e:
             print(e)
             exit(0)
+        msg.print_info('Server started. Waiting for connections.')
         self.socket.listen(self.backlog)
 
         try:
             self.client, self.remote_address = self.socket.accept()
             self._mainloop()
         except Exception as e:
-            print(e)
-            print("Quitting...", end='')
+            if self.debug:
+                print(e)
             if self.client is not None:
                 self.client.close()
             self.socket.close()
-            print('okay', end='')
-            print()
 
     def _mainloop(self):
         # Preamble

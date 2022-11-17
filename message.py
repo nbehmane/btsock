@@ -16,6 +16,13 @@ file = None
 filename = None
 
 
+def print_warn(message):
+    print("\033[0;31m WARNING:" + f"\033[1;37m {message}.")
+
+def print_info(message):
+    print("\033[1;31m INFO:" + f"\033[0;37m {message}.")
+
+
 def cmd_ofile(message):
     global file
     global filename

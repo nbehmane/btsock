@@ -44,6 +44,18 @@ class Client:
         if send:
             self._sendloop(filename)
 
+    def _serverack(self, file=None):
+        server_msg = None
+        try:
+            msg_cmd, msg_length, msg_data = struct.unpack(msg.Message.type_string, self.socket.recv(self.size))
+            server_msg = msg.Message.construct(msg_cmd, msg_length, msg_data)
+        except Exception as e:
+            if file is not None:
+                file.close()
+            print(e)
+            self.socket.close()
+        return server_msg
+
     def _sendloop(self, filename):
         self._preamble()
 
@@ -55,14 +67,7 @@ class Client:
         new_msg = msg.Message(msg.CMD_OFILE, len(filename), filename)
         self.socket.send(new_msg.pack(encode=True))
 
-        server_msg = None
-        try:
-            msg_cmd, msg_length, msg_data = struct.unpack(msg.Message.type_string, self.socket.recv(self.size))
-            server_msg = msg.Message.construct(msg_cmd, msg_length, msg_data)
-        except Exception as e:
-            file.close()
-            print(e)
-            self.socket.close()
+        server_msg = self._serverack(file=file)
 
         if server_msg:
             self.handler.msg_handler(server_msg)
@@ -78,19 +83,12 @@ class Client:
             self.socket.send(new_msg.pack(encode=False))
             progress_bar(file.tell(), file_size, 20)
 
-            server_msg = None
-            try:
-                msg_cmd, msg_length, msg_data = struct.unpack(msg.Message.type_string, self.socket.recv(self.size))
-                server_msg = msg.Message.construct(msg_cmd, msg_length, msg_data)
-            except Exception as e:
-                file.close()
-                print(e)
-                self.socket.close()
+            server_msg = self._serverack(file=file)
 
             if server_msg:
                 self.handler.msg_handler(server_msg)
             else:
-                print("\033[0;31m WARNING:" + "\033[1;37m No acknowledgment sent from server.")
+                msg.print_warn("\033[1;37m No acknowledgment sent from server.")
 
             if done:
                 break
@@ -128,7 +126,7 @@ class Client:
             if server_msg:
                 self.handler.msg_handler(server_msg)
             else:
-                print("\033[0;31m WARNING:" + "\033[1;37m No acknowledgment sent from server.")
+                msg.print_warn("\033[1;37m No acknowledgment sent from server.")
         self.socket.close()
 
     def _preamble(self):
