@@ -28,7 +28,7 @@ def main():
                         type=str,
                         default='0xDEADBEEF',
                         required=False)
-    parser.add_argument('-s', '--send',
+    parser.add_argument('-S', '--send',
                         metavar='ABSOLUTE_FILE_PATH',
                         required=False,
                         default='0xDEADBEEF')
