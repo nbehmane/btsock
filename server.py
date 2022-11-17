@@ -27,13 +27,18 @@ class Server:
         print("Starting server...")
         if self.handler is None:
             self.handler = msg.MessageHandler()
-        self.socket.bind((self.address, self.port))
+        try:
+            self.socket.bind((self.address, self.port))
+        except Exception as e:
+            print(e)
+            exit(0)
         self.socket.listen(self.backlog)
 
         try:
             self.client, self.remote_address = self.socket.accept()
             self._mainloop()
         except Exception as e:
+            print(e)
             print("Quitting...", end='')
             if self.client is not None:
                 self.client.close()

@@ -1,12 +1,27 @@
+import io
 import socket
 import struct
+import time
+
 import message as msg
+
+
+def progress_bar(current, total, bar_length=20):
+    fraction = current / total
+
+    arrow = int(fraction * bar_length - 1) * '-' + '>'
+    padding = int(bar_length - len(arrow)) * ' '
+
+    ending = '\n' if current == total else '\r'
+
+    print(f'Progress: [{arrow}{padding}] {int(fraction * 100)}%', end=ending)
 
 
 class Client:
     """
     Client to connect to server.
     """
+
     def __init__(self, server_address, port=3, size=1024, handler=None):
         self.server_address = server_address
         self.port = port
@@ -20,17 +35,75 @@ class Client:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.handler = handler
 
-    def start_client(self):
+    def start_client(self, send=False, filename=None):
         if self.handler is None:
             self.handler = msg.MessageHandler()
         self.socket.connect((self.server_address, self.port))
-        self._mainloop()
+        if not send:
+            self._mainloop()
+        if send:
+            self._sendloop(filename)
+
+    def _sendloop(self, filename):
+        self._preamble()
+
+        file = open(filename, "rb")
+        file_size = file.seek(0, io.SEEK_END)
+        file.close()
+        file = open(filename, "rb")
+
+        new_msg = msg.Message(msg.CMD_OFILE, len(filename), filename)
+        self.socket.send(new_msg.pack(encode=True))
+
+        server_msg = None
+        try:
+            msg_cmd, msg_length, msg_data = struct.unpack(msg.Message.type_string, self.socket.recv(self.size))
+            server_msg = msg.Message.construct(msg_cmd, msg_length, msg_data)
+        except Exception as e:
+            file.close()
+            print(e)
+            self.socket.close()
+
+        if server_msg:
+            self.handler.msg_handler(server_msg)
+        else:
+            print("\033[0;31m WARNING:" + "\033[1;37m No acknowledgment sent from server.")
+
+        done = False
+        while True:
+            line = file.read(1000)
+            if file.tell() == file_size:
+                done = True
+            new_msg = msg.Message(msg.CMD_FILE, len(line), line)
+            self.socket.send(new_msg.pack(encode=False))
+            progress_bar(file.tell(), file_size, 20)
+
+            server_msg = None
+            try:
+                msg_cmd, msg_length, msg_data = struct.unpack(msg.Message.type_string, self.socket.recv(self.size))
+                server_msg = msg.Message.construct(msg_cmd, msg_length, msg_data)
+            except Exception as e:
+                file.close()
+                print(e)
+                self.socket.close()
+
+            if server_msg:
+                self.handler.msg_handler(server_msg)
+            else:
+                print("\033[0;31m WARNING:" + "\033[1;37m No acknowledgment sent from server.")
+
+            if done:
+                break
+
+        new_msg = msg.Message(msg.CMD_CFILE, len(filename), filename)
+        self.socket.send(new_msg.pack(encode=True))
+
+        file.close()
+        self.socket.close()
 
     def _mainloop(self):
         # Preamble
-        data = self.socket.recv(self.size)
-        print(data.decode())
-        self.socket.send(bytes("Client connected.", 'UTF-8'))
+        self._preamble()
 
         while True:  # Mainloop
             text = input("$> ").split(" ", 1)
@@ -57,6 +130,11 @@ class Client:
             else:
                 print("\033[0;31m WARNING:" + "\033[1;37m No acknowledgment sent from server.")
         self.socket.close()
+
+    def _preamble(self):
+        data = self.socket.recv(self.size)
+        print(data.decode())
+        self.socket.send(bytes("Client connected.", 'UTF-8'))
 
 
 if __name__ == '__main__':

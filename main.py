@@ -28,6 +28,10 @@ def main():
                         type=str,
                         default='0xDEADBEEF',
                         required=False)
+    parser.add_argument('-s', '--send',
+                        metavar='ABSOLUTE_FILE_PATH',
+                        required=False,
+                        default='0xDEADBEEF')
 
     args = parser.parse_args()
 
@@ -42,7 +46,10 @@ def main():
             address = socket.gethostname()
         print(f"Connecting to {address} on port {args.port}.")
         client = cl.Client(address, args.port, DEFAULT_SIZE)
-        client.start_client()
+        if args.send == '0xDEADBEEF':
+            client.start_client()
+        else:
+            client.start_client(send=True, filename=args.send)
     else:
         print("Server or Client designation required.")
 
