@@ -69,7 +69,7 @@ def main():
             msg.print_info(f"Address not given. Using {socket.gethostname()}")
             address = socket.gethostname()
         msg.print_info(f"Connecting to {address} on port {args.port}")
-        client = cl.Client(address, args.port, DEFAULT_SIZE)
+        client = cl.Client(address, port=args.port, size=DEFAULT_SIZE)
         if args.send == '0xDEADBEEF':
             client.start_client()
         else:

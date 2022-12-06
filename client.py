@@ -36,7 +36,6 @@ class Client:
     def start_client(self, send=False, filename=None):
         if self.handler is None:
             self.handler = msg.MessageHandler()
-        print(self.server_address)
         self.socket.connect((self.server_address, self.port))
         if not send:
             self._mainloop()
@@ -138,5 +137,5 @@ if __name__ == '__main__':
     server_address = "38:BA:F8:55:8C:90"
     port = 3
     size = 1024
-    client = Client(socket.gethostname(), port, size)
+    client = Client(server_address, port, size)
     client.start_client()
