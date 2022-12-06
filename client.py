@@ -36,6 +36,7 @@ class Client:
     def start_client(self, send=False, filename=None):
         if self.handler is None:
             self.handler = msg.MessageHandler()
+        print(self.server_address)
         self.socket.connect((self.server_address, self.port))
         if not send:
             self._mainloop()
