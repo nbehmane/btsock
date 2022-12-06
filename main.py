@@ -55,7 +55,7 @@ def main():
         # Temp for demo
         server_address = None
         if args.serverAddress:
-            server_address = args.serverAddress
+            server_address = args.serverAddress[0]
         else:
             print("Server address required.")
             exit(0)
