@@ -10,3 +10,5 @@ A Bluetooth socket program to transfer files from one Linux machine to another.
 
 # Known Issues
 1. When using a Raspberry PI with Raspberry PI OS, the server will fail to launch.
+2. Eventually, supplying the server address will be unecessary. 
+  - Will try to find the BT address of the server controller automatically.
