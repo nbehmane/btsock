@@ -1,8 +1,12 @@
 # btsock
-A Bluetooth socket program.
+A Bluetooth socket program to transfer files from one Linux machine to another.
 
-This project is me getting used to socket programming.
+# Usage
+1. The computer that will be receiving the file will be known as the server and must be launched first.
+  - `python3 main.py --server --serverAddress <bluetooth_address_of_server>`
+2. The computer that will be sending the file will be known as a client and must be launched after the server.
+  - `python3 main.py --client --send <file_name> --address <server_address>`
+3. Once the file has been transferred, both programs will quit.
 
-Currently I'm using socket.AF_INET to test locally without having to have two Bluetooth controllers.
-
-Feel free to leave feedback!
+# Known Issues
+1. When using a Raspberry PI with Raspberry PI OS, the server will fail to launch.
