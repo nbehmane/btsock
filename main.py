@@ -4,7 +4,7 @@ import server as sv
 import client as cl
 import message as msg
 
-DEFAULT_PORT = 25565
+DEFAULT_PORT = 3
 DEFAULT_BD_ADDR = "38:BA:F8:55:8C:90"
 DEFAULT_SIZE = 1024
 DEFAULT_BACKLOG = 5
@@ -35,6 +35,14 @@ def main():
                         default='0xDEADBEEF',
                         required=False,
                         help='Bluetooth address to connect to.')
+    parser.add_argument('-sa',
+                        '--serverAddress',
+                        metavar='SERVER_ADDRESS',
+                        nargs=1,
+                        type=str,
+                        default='0xDEADBEEF',
+                        required=False,
+                        help='Bluetooth address to start server on.')
     parser.add_argument('-S', '--send',
                         metavar='ABSOLUTE_FILE_PATH',
                         required=False,
@@ -44,8 +52,15 @@ def main():
     args = parser.parse_args()
 
     if args.server:
-        msg.print_info(f"Address: {socket.gethostname()} | Port: {args.port}")
-        server = sv.Server(socket.gethostname(), args.port, DEFAULT_SIZE, DEFAULT_BACKLOG)
+        # Temp for demo
+        server_address = None
+        if args.serverAddress:
+            server_address = args.serverAddress
+        else:
+            print("Server address required.")
+            exit(0)
+        msg.print_info(f"Address: {server_address} | Port: {args.port}")
+        server = sv.Server(server_address, args.port, DEFAULT_SIZE, DEFAULT_BACKLOG)
         server.start_server()
     elif args.client:
         address = args.address
