@@ -56,6 +56,7 @@ def main():
         server_address = None
         if args.serverAddress:
             server_address = args.serverAddress[0]
+            print(server_address)
         else:
             print("Server address required.")
             exit(0)
@@ -63,7 +64,7 @@ def main():
         server = sv.Server(server_address, args.port, DEFAULT_SIZE, DEFAULT_BACKLOG)
         server.start_server()
     elif args.client:
-        address = args.address
+        address = args.address[0]
         if address == '0xDEADBEEF':
             msg.print_info(f"Address not given. Using {socket.gethostname()}")
             address = socket.gethostname()
