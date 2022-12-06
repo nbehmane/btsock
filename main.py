@@ -15,24 +15,31 @@ def main():
         prog="btsock",
         description="File management via Bluetooth sockets."
     )
-    parser.add_argument('--server', action='store_true')
-    parser.add_argument('--client', action='store_true')
+    parser.add_argument('--server',
+                        action='store_true',
+                        help='Server designation.')
+    parser.add_argument('--client',
+                        action='store_true',
+                        help='Client designation.')
     parser.add_argument('-p',
                         '--port',
                         metavar='PORT',
                         required=False,
-                        default=DEFAULT_PORT)
+                        default=DEFAULT_PORT,
+                        help=f"Set Bluetooth port. Default port is {DEFAULT_PORT}.")
     parser.add_argument('-a',
                         '--address',
                         metavar='ADDRESS',
                         nargs=1,
                         type=str,
                         default='0xDEADBEEF',
-                        required=False)
+                        required=False,
+                        help='Bluetooth address to connect to.')
     parser.add_argument('-S', '--send',
                         metavar='ABSOLUTE_FILE_PATH',
                         required=False,
-                        default='0xDEADBEEF')
+                        default='0xDEADBEEF',
+                        help='File to send to server.')
 
     args = parser.parse_args()
 
@@ -52,7 +59,8 @@ def main():
         else:
             client.start_client(send=True, filename=args.send)
     else:
-        print("Server or Client designation required.")
+        print("Server or Client designation required")
+        parser.print_help()
 
 
 if __name__ == '__main__':

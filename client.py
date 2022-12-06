@@ -26,13 +26,11 @@ class Client:
         self.server_address = server_address
         self.port = port
         self.size = size
-        """
         self.socket = socket.socket(
             socket.AF_BLUETOOTH,
             socket.SOCK_STREAM,
             socket.BTPROTO_RFCOMM)
-        """
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        #self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.handler = handler
 
     def start_client(self, send=False, filename=None):
@@ -139,5 +137,5 @@ if __name__ == '__main__':
     server_address = "38:BA:F8:55:8C:90"
     port = 3
     size = 1024
-    client = Client(socket.gethostname(), 25565, size)
+    client = Client(socket.gethostname(), port, size)
     client.start_client()

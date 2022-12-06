@@ -15,13 +15,11 @@ class Server:
         self.size = size
         self.backlog = backlog
         self.client = None
-        """
         self.socket = socket.socket(
             socket.AF_BLUETOOTH, 
             socket.SOCK_STREAM, 
             socket.BTPROTO_RFCOMM)
-        """
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        #self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.handler = msg_handler
 
     def start_server(self):
@@ -70,5 +68,5 @@ if __name__ == '__main__':
     port = 3
     size = 1024
     backlog = 5
-    server = Server(socket.gethostname(), 25565, size, backlog)
+    server = Server(socket.gethostname(), port, size, backlog)
     server.start_server()
