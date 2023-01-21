@@ -9,8 +9,6 @@ DEFAULT_BD_ADDR = "38:BA:F8:55:8C:90"
 DEFAULT_SIZE = 1024
 DEFAULT_BACKLOG = 5
 
-hello = "hello"
-
 
 def main():
     parser = argparse.ArgumentParser(
